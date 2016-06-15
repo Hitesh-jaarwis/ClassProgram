@@ -294,7 +294,7 @@ class BinarySearchTree{
 public:
     BinarySearchTree ();
     bool add (int newValue);
-    void depthFirstTraversal () const;
+    int depthFirstTraversal (int number) const;
     int breadthFirstTraversal (int number) const;
     BSTNode* getBSTNodeFromQueue (Queue queue) const;
 private:
@@ -350,36 +350,32 @@ bool BinarySearchTree :: add (int newValue) {
 }// end add
 
 
-void BinarySearchTree :: depthFirstTraversal () const {
+int BinarySearchTree :: depthFirstTraversal (int number) const {
     
-    Stack s;
-    
+    Stack s1, s2;
+    int count = 0;
     BSTNode* current = root;
-    while (current != 0) {
+    s1.push(current);
+    
+    
+    while (s1.pop(current)) {
+        if (current -> getLeft () != 0)
+            s1.push(current ->getLeft());
         
-        if (current -> getLeft () != 0){
-            s.push(current);
-            current = current -> getLeft ();
-        }
-        else if (current -> getRight () != 0){
-            s.push(current);
-            current = current -> getRight ();
-        }
-        else{//Left and right are both zero
-            current -> print ();
-            BSTNode *previous;
-            
-            while (s.pop(previous)) {
-                if (previous != 0) {
-                    previous -> print();
-                }
-                else
-                    cout<<"Empty stack";
+        if (current -> getRight () != 0)
+            s1.push(current->getRight());
+        s2.push(current);
+    }//loop to
+    
+    if (current) {
+        while (s2.pop(current)) {
+            if (current ->getValue() == number) {
+                return count;
             }
-            //this won't work for the right node of the tree.
-            current = 0;//Temp
+            count++;
         }
-    }
+    }//check if current contains any memory or not
+    return count;
 }// end depthFirstTraversal
 
 int BinarySearchTree :: breadthFirstTraversal (int number) const {
@@ -388,23 +384,23 @@ int BinarySearchTree :: breadthFirstTraversal (int number) const {
     BSTNode* current = root;
     queue.add(root);
     int count = 0;
-    while (current != NULL) {
-        
-        //If there is right child, add it to queue
-        if (current -> getLeft() != 0)
-            queue.add(current -> getLeft());
-        
-        //If there is right child, add it to queue
-        if (current -> getRight() != 0)
-            queue.add(current -> getRight());
-        
-        queue.removeFromHead(current);
-        if (current->getValue() == number) {
-            return count;
+    if (current) {
+        while (queue.removeFromHead(current)) {
+            if (current->getValue() == number)
+                return count;
+            
+            //If there is right child, add it to queue
+            if (current -> getLeft() != 0)
+                queue.add(current -> getLeft());
+            
+            //If there is right child, add it to queue
+            if (current -> getRight() != 0)
+                queue.add(current -> getRight());
+            
+            count++;
         }
-        current = getBSTNodeFromQueue(queue);
-        count++;
     }
+    
     return count;
 }// end breadthFirstTraversal
 
@@ -427,48 +423,17 @@ int * storeRandomNumbersInArray(int array[]){
         array[i] = i;
     }
     random_shuffle(array, array + 1001);
-    
-    /*
-     int tempArr[1000];
-     
-     for(int i=0;i<1000;++i)
-     {
-     int r=rand()%1000;
-     if(!tempArr[r])
-     printf("%d\n",r);
-     else
-     i--;
-     tempArr[r]=1;
-     }
-     for (int i=0; i<1000; i++)
-     cout << tempArr[i] << " ";
-     
-     */
     return array;
-}
+}//end storeRandomNumbersInArray function
+
 
 //-----------------------------END of BinarySearchTree Class---------------------------------//
 // START of Main-----
 int main(int argc, const char * argv[]) {
     
-    BSTNode n1 (137);
-    BSTNode n2 (122);
-    //    n1.setLeft (&n2);
-    BSTNode n3 (116);
-    //    n2.setLeft (&n3);
-    BSTNode n4 (120);
-    //    n3.setRight (&n4);
-    //    n1.print ();
-    //    cout << endl;
-    //    n2.print ();
-    //    cout << endl;
-    //    n3.print ();
-    //    cout << endl;
-    //    n4.print ();
-    //    cout << endl;
-    
     int arr[1000];
     arr[1000] = *storeRandomNumbersInArray(arr);
+    
     
     //    int numberToSeed = 0;
     //    cout<<"Enter random number to seed:\n";
@@ -484,33 +449,10 @@ int main(int argc, const char * argv[]) {
     
     cout<<"i    BFS    DFS\n";
     for (int i = 1; i <= 10; i++) {
-        int travCount = tree.breadthFirstTraversal (i*100);
-        cout<<i<<"    "<<travCount<<endl;
+        int bfsNodeCount = tree.breadthFirstTraversal (i*100);
+        int dfsNodeCount = tree.depthFirstTraversal (i*100);
+        cout<<i<<"    "<<bfsNodeCount<<"    "<<dfsNodeCount<<endl;
     }
-    
-    //    cout<<"Traversal Count:"<<tree.breadthFirstTraversal (759)<<endl;
-    
-    return 0;
-    
-    
-    /*
-     //Working on UnorderedLinkedList & Stack and Queues.
-     BSTNode *ptr = &n1;
-     
-     UnorderedLinkedList l1;
-     l1.addAtHead (&n1);
-     l1.print ();
-     l1.addAtTail(&n2);
-     l1.print ();
-     l1.addAtTail(&n3);
-     l1.print ();
-     l1.addAtHead(&n4);
-     l1.print ();
-     cout<<endl;
-     l1.removeFromHead(ptr);
-     l1.print ();
-     
-     */
     
     return 0;
 }//end main
